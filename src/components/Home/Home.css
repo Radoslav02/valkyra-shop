@@ -1,0 +1,9 @@
+.home-page-container {
+    min-height: calc(100vh - 369px);
+    width: 100%;
+    padding: 50px;
+    background-color: #ffffff8e;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
