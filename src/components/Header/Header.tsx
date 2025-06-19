@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { setSearchQuery } from '../Redux/searchSlice'; // Import the action
-import LogoX from "../../assets/logo/admin-ajax-logo.png";
+import LogoX from "../../assets/admin-ajax-logo.png";
 import type { RootState } from "../Redux/store";
 
 export default function Header() {
