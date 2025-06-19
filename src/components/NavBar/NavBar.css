@@ -92,8 +92,8 @@ nav {
 .mobile-nav-items {
     background: rgb(182, 192, 191);
     background: linear-gradient(260deg,
-            rgba(182, 192, 191, 1) 0%,
-            rgba(84, 193, 67, 1) 100%);
+            rgba(0, 0, 0, 0.048) 0%,
+            #e7cfb4 100%);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
