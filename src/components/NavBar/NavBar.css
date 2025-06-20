@@ -1,7 +1,7 @@
 /* General styles */
 nav {
     position: relative;
-    font-family: Arial, sans-serif;
+    
 }
 
 /* === Desktop Menu Styles === */
@@ -20,6 +20,7 @@ nav {
     justify-content: center;
     flex-wrap: wrap;
     position: relative;
+    
 }
 
 .nav-item {
