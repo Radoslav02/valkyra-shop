@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 import { ScaleLoader } from "react-spinners";
 import { auth, db } from "../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 interface UserProfile {
   email: string;
@@ -32,17 +31,18 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const uid = user.uid;
+    const fetchUserProfile = async () => {
+      if (auth.currentUser) {
+        const uid = auth.currentUser.uid;
         setLoading(true);
+
         try {
           const docRef = doc(db, "users", uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            const profileData: UserProfile = {
+            setUserProfile({
               email: data.email,
               isAdmin: data.isAdmin,
               name: data.name,
@@ -52,9 +52,18 @@ const ProfilePage = () => {
               postalCode: data.postalCode,
               street: data.street,
               surname: data.surname,
-            };
-            setUserProfile(profileData);
-            setFormData(profileData);
+            });
+            setFormData({
+              email: data.email,
+              isAdmin: data.isAdmin,
+              name: data.name,
+              number: data.number,
+              phoneNumber: data.phoneNumber,
+              place: data.place,
+              postalCode: data.postalCode,
+              street: data.street,
+              surname: data.surname,
+            });
             setUserId(uid);
           }
         } catch (error) {
@@ -62,14 +71,11 @@ const ProfilePage = () => {
         } finally {
           setLoading(false);
         }
-      } else {
-        // Ako korisnik nije ulogovan, možeš ga preusmeriti na login
-        navigate("/prijava");
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, [navigate]);
+    fetchUserProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -214,16 +220,10 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="edit-button-wrapper">
-                      <button
-                        className="save-button"
-                        onClick={handleUpdateProfile}
-                      >
+                      <button className="save-button" onClick={handleUpdateProfile}>
                         Sačuvaj
                       </button>
-                      <button
-                        className="cancel-button"
-                        onClick={() => setEditing(false)}
-                      >
+                      <button className="cancel-button" onClick={() => setEditing(false)}>
                         Otkaži
                       </button>
                     </div>
@@ -238,10 +238,7 @@ const ProfilePage = () => {
                     <p>Naziv ulice: {userProfile.street}</p>
                     <p>Broj kuće/zgrade: {userProfile.number}</p>
                     <div className="show-profile-button-wrapper">
-                      <button
-                        className="edit-button"
-                        onClick={() => setEditing(true)}
-                      >
+                      <button className="edit-button" onClick={() => setEditing(true)}>
                         Izmeni
                       </button>
                       <button className="logout-button" onClick={handleLogout}>
