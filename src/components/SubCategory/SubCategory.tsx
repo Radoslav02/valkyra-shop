@@ -1,15 +1,16 @@
+import "./SubCategoryStyle.css";
 import { useEffect, useState, useMemo } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/material";
 import { ScaleLoader } from "react-spinners";
 import { useSelector } from "react-redux";
+
 import ProductCard from "../ProductCard/ProductCard";
-import "./Home.css";
-import { db } from "../../firebase";
 import type { RootState } from "../Redux/store";
+import { db } from "../../firebase";
 import Sort from "../Sort/Sort";
-import Filter from "../Filter/Filter";
-import { useNavigate } from "react-router-dom";
+import Filter from "../Filter/Filter"; 
 
 type Product = {
   productId: string;
@@ -21,28 +22,30 @@ type Product = {
   category: string;
   size: string[];
   manufacturer: string;
-  dimensions: string; // Adding dimensions field
+  dimensions?: string; 
 };
 
-export default function HomePage() {
+export default function SubCategoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  // Sorting
   const [sortBy, setSortBy] = useState<string>("nameAsc");
 
-  // Dimension filter
   const [dimensionFilter, setDimensionFilter] = useState<string[]>([]);
 
-  // Global search from Redux
+  const navigate = useNavigate();
+  const { subCategory } = useParams<{ subCategory: string }>();
+
   const searchQuery = useSelector((state: RootState) => state.search.query);
 
-  // Fetch all products on mount
   useEffect(() => {
     const fetchProducts = async () => {
+      if (!subCategory) return;
       setLoading(true);
       try {
-        const q = collection(db, "products");
+        const q = query(
+          collection(db, "products"),
+          where("subcategory", "==", subCategory)
+        );
         const querySnapshot = await getDocs(q);
         const fetchedProducts: Product[] = querySnapshot.docs.map((doc) => ({
           productId: doc.id,
@@ -51,41 +54,43 @@ export default function HomePage() {
 
         setProducts(fetchedProducts);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching products for subcategory:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [subCategory]);
 
-  // Compute unique dimensions
+  // Compute unique dimensions from the fetched products
   const availableDimensions = useMemo(() => {
-    const uniqueSet = new Set<string>();
+    const set = new Set<string>();
     products.forEach((p) => {
       if (p.dimensions) {
-        p.dimensions.split(",").forEach((dimension) => {
-          uniqueSet.add(dimension.trim());
+        p.dimensions.split(",").forEach((d) => {
+          set.add(d.trim());
         });
       }
     });
-    return Array.from(uniqueSet);
+    return Array.from(set);
   }, [products]);
 
-  // Filter products by search query and dimensions
+  // Filter products by search query and selected dimensions
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const matchesDimension =
-        dimensionFilter.length === 0 ||
-        product.dimensions
-          .split(",")
-          .some((dimension) => dimensionFilter.includes(dimension.trim()));
 
-      return matchesSearch && matchesDimension;
+      const matchesDimensions = dimensionFilter.length
+        ? product.dimensions
+            ?.split(",")
+            .map((d) => d.trim())
+            .some((d) => dimensionFilter.includes(d))
+        : true;
+
+      return matchesSearch && matchesDimensions;
     });
   }, [products, searchQuery, dimensionFilter]);
 
@@ -93,59 +98,52 @@ export default function HomePage() {
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts];
     switch (sortBy) {
-      case "nameDesc":
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-        break;
       case "priceAsc":
         sorted.sort((a, b) => a.price - b.price);
         break;
       case "priceDesc":
         sorted.sort((a, b) => b.price - a.price);
         break;
-      default: // "nameAsc"
+      case "nameDesc":
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      default: // 'nameAsc'
         sorted.sort((a, b) => a.name.localeCompare(b.name));
         break;
     }
     return sorted;
   }, [filteredProducts, sortBy]);
 
-  // Handlers
-  const handleSortChange = (sort: string) => {
-    setSortBy(sort);
-  };
-
-  const handleFilterChange = (filters: { dimensions: string[] }) => {
-    setDimensionFilter(filters.dimensions);
-  };
-
   const handleProductClick = (productId: string) => {
     navigate(`/proizvod/${productId}`);
   };
 
   return (
-    <div className="home-page-container">
-      <h2 className="home-page-title">Početna</h2>
+    <div className="sub-category-page-container">
+      <h2 className="sub-category-title">{subCategory}</h2>
       {loading ? (
         <div className="loader">
           <ScaleLoader color="#e7cfb4" />
         </div>
       ) : (
-        <div className="home-page-wrapper">
-          {/* Sidebar with Filter */}
+        <div className="sub-page-wrapper">
+          {/* Sidebar: Sort on top, Filter for dimensions below */}
           <div className="sidebar">
             <div className="sort-filter-wrapper">
-              <Sort onSortChange={handleSortChange} />
+              <Sort onSortChange={setSortBy} />
               <Filter
                 availableDimensions={availableDimensions}
-                onFilterChange={handleFilterChange}
+                onFilterChange={(filters) => setDimensionFilter(filters.dimensions)}
               />
             </div>
           </div>
 
           {/* Main Content Area */}
-          <div className="main-content">
+          <div className="sub-main-content">
             {sortedProducts.length === 0 ? (
-              <div className="empty-message">No products available</div>
+              <div className="empty-message">
+                Nema proizvoda po datom kriterijumu
+              </div>
             ) : (
               <Box
                 className="products-container"
@@ -155,7 +153,6 @@ export default function HomePage() {
                   flexWrap: "wrap",
                   gap: 3,
                   justifyContent: "center",
-                  alignItems: "center",
                 }}
               >
                 {sortedProducts.map((product) => (

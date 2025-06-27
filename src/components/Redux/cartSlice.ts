@@ -8,6 +8,11 @@ interface CartItem {
   image: string;
   price: number;
   quantity: number;
+  selectedDimension?: string;
+  selectedScript?: string;
+  customTitle?: string;
+  onDiscount?: boolean;
+  discountPrice?: number;
 }
 
 interface CartState {

@@ -120,7 +120,7 @@
 
 /* Main image at index 0 can have a green border by default */
 .thumbnail.main-image {
-  border-color: #54c143;
+  border-color: #f5c896;
 }
 
 /* If user selects an image to become the main image, show a highlight */
@@ -129,7 +129,7 @@
 }
 
 .thumbnail:hover {
-  border-color: #54c143;
+  border-color: #f5c896;
 }
 
 /* Delete icon in the Action (Akcija) column */

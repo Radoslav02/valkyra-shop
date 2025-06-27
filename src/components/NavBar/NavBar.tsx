@@ -11,45 +11,45 @@ const navItems = [
   },
   {
     label: "Venčanja, krštenja, rođendani",
-    route: "/venčanja",
+    route: "/Venčanja, krštenja, rođendani",
     subItems: [
       {
         label: "Kutije za koverte i novac",
-        route: "/podkategorija/kutije-koverte-novac",
+        route: "/podkategorija/Kutije za koverte i novac",
       },
       {
         label: "Table dobrodošlice i spisak gostiju",
-        route: "/podkategorija/table-spisak-gostiju",
+        route: "/podkategorija/Table dobrodošlice i spisak gostiju",
       },
       {
         label: "Table za obeležavanje stolova",
-        route: "/podkategorija/table-stolovi",
+        route: "/podkategorija/Table za obeležavanje stolova",
       },
       {
         label: "Toperi za tortu",
-        route: "/podkategorija/toperi-za-tortu",
+        route: "/podkategorija/Toperi za tortu",
       },
     ],
   },
   {
     label: "Reklamne table i pločice",
-    route: "/table-pločice",
+    route: "/Reklamne table i pločice",
     subItems: [
       {
         label: "Reklame table za firmu",
-        route: "/podkategorija/table-firme",
+        route: "/podkategorija/Reklame table za firmu",
       },
       {
         label: "Moderni kućni brojevi",
-        route: "/podkategorija/moderni-kućni-brojevi",
+        route: "/podkategorija/Moderni kućni brojevi",
       },
       {
         label: "Pločice za vrata i obeležavanje prostorija",
-        route: "/podkategorija/pločice-vrata-prostorije",
+        route: "/podkategorija/Pločice za vrata i obeležavanje prostorija",
       },
       {
         label: "UV štampa reklamnog materijala",
-        route: "/podkategorija/uv-štampa",
+        route: "/podkategorija/UV štampa reklamnog materijala",
       },
     ],
   },
@@ -59,17 +59,17 @@ const navItems = [
     subItems: [
       {
         label: "Štampa i sečenje nalepnica",
-        route: "/podkategorija/štampa-nalepnica",
+        route: "/podkategorija/Štampa i sečenje nalepnica",
       },
       {
         label: "Nalepnice za dečije sobe",
-        route: "/podkategorija/nalepnice-dečije-sobe",
+        route: "/podkategorija/Nalepnice za dečije sobe",
       },
       {
         label: "3D nalepnice - stikeri",
-        route: "/podkategorija/3d-nalepnice",
+        route: "/podkategorija/3D nalepnice - stikeri",
       },
-      { label: "Lepljenje folija", route: "/podkategorija/lepljenje-folije" },
+      { label: "Lepljenje folija", route: "/podkategorija/Lepljenje folija" },
     ],
   },
 ];

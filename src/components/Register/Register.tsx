@@ -57,7 +57,7 @@ const RegisterForm = () => {
       });
 
       toast.success(
-        "Registracija uspešna! Na Vaš email smo poslali link za verifikaciju."
+        "Na Vaš email smo poslali link za verifikaciju. Proverite SPAM folder!"
       );
       navigate("/prijava");
     } catch (error) {

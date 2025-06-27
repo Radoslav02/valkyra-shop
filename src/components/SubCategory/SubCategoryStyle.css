@@ -1,5 +1,5 @@
-/* Container for the entire home page */
-.home-page-container {
+/* Container for the entire subcategory page */
+.sub-category-page-container {
     min-height: calc(100vh - 369px);
     width: 100%;
     padding: 40px 20px;
@@ -11,7 +11,7 @@
 }
 
 /* Title styling */
-.home-page-title {
+.sub-category-title {
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
@@ -19,7 +19,7 @@
 }
 
 /* Wrapper for sidebar and main content */
-.home-page-wrapper {
+.sub-page-wrapper {
     display: flex;
 }
 
@@ -42,7 +42,7 @@
 }
 
 /* Main content area for products */
-.main-content {
+.sub-main-content {
     flex-grow: 1;
 }
 
@@ -54,7 +54,6 @@
     gap: 20px !important;
     justify-content: flex-start !important;
 }
-
 
 /* Loader styling */
 .loader {
@@ -75,7 +74,7 @@
 
 /* Responsive: On small screens, stack sidebar above main content */
 @media (max-width: 768px) {
-    .home-page-wrapper {
+    .sub-page-wrapper {
         flex-direction: column;
         align-items: center;
     }
@@ -86,15 +85,7 @@
         margin-bottom: 20px;
     }
 
-    .main-content {
+    .sub-main-content {
         width: 100%;
-    }
-
-    .products-container {
-        display: flex !important;
-        flex-direction: column !important;  /* Stack items vertically */
-        justify-content: center !important; /* Center the items horizontally */
-        align-items: center !important;     /* Align the items vertically */
-        gap: 20px !important;
     }
 }
