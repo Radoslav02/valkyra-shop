@@ -8,6 +8,8 @@ import type { RootState } from "../Redux/store";
 import TermsModal from "../Modals/TermsModal";
 import { Button, Checkbox } from "@mui/material";
 import { toast } from "react-toastify";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase";
 
 interface Customer {
   email: string;
@@ -37,16 +39,34 @@ const Order = () => {
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State for checkbox
 
-  const sendEmail = () => {
-    if (!items || items.length === 0) {
-      toast.error("Nema poručenih proizvoda.");
-      return;
-    }
+  const sendEmail = async () => {
+  if (!items || items.length === 0) {
+    toast.error("Nema poručenih proizvoda.");
+    return;
+  }
 
-    if (!isTermsAccepted) {
-      toast.error("Morate prihvatiti uslove korišćenja pre nego što nastavite.");
-      return;
-    }
+  if (!isTermsAccepted) {
+    toast.error("Morate prihvatiti uslove korišćenja pre nego što nastavite.");
+    return;
+  }
+
+  const orderData = {
+    customer,
+    total,
+    items: items.map((item) => ({
+      id: item.productId,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      selectedDimension: item.selectedDimension || null,
+      selectedScript: item.selectedScript || null,
+      customTitle: item.customTitle || null,
+    })),
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await addDoc(collection(db, "orders"), orderData);
 
     const templateParams = {
       customerEmail: customer?.email,
@@ -75,23 +95,22 @@ const Order = () => {
         .join("\n"),
     };
 
-    emailjs
-      .send(
-        "service_mqkqlir",
-        "template_qowqqcs",
-        templateParams,
-        "1tiA01x6TVNOrRdyO"
-      )
-      .then(() => {
-        dispatch(clearCart());
-        setIsEmailSent(true);
-        navigate("/potvrda");
-      })
-      .catch((error) => {
-        console.error("Email sending error:", error);
-        toast.error(`Error: ${error.text || error.message}`);
-      });
-  };
+    await emailjs.send(
+      "service_mqkqlir",
+      "template_qowqqcs",
+      templateParams,
+      "1tiA01x6TVNOrRdyO"
+    );
+
+    dispatch(clearCart());
+    setIsEmailSent(true);
+    navigate("/potvrda");
+  } catch (error: any) {
+    console.error("Greška pri slanju porudžbine:", error);
+    toast.error(`Greška: ${error.message || "Neuspelo slanje"}`);
+  }
+};
+
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("sr-RS", {

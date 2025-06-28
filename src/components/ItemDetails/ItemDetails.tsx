@@ -131,7 +131,6 @@ export default function ItemDetails() {
 
     toast.success("Proizvod je uspešno dodat u korpu!");
     setTimeout(() => {
-      navigate("/početna");
     }, 1500);
   };
 
