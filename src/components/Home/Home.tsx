@@ -145,7 +145,7 @@ export default function HomePage() {
           {/* Main Content Area */}
           <div className="main-content">
             {sortedProducts.length === 0 ? (
-              <div className="empty-message">Nema proizvoda po datom kriterijumu</div>
+              <div className="empty-message">Nema proizvoda po datom kriterijumu.</div>
             ) : (
               <Box
                 className="products-container"
