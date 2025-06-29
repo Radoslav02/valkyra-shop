@@ -47,10 +47,10 @@ const Filter: React.FC<FilterProps> = ({
   return (
     <Box className="filter-container">
       <Box className="filter-header" onClick={() => setDrawerOpen(!drawerOpen)}>
-        <FilterAltIcon color="primary" />
-        <Typography variant="h6" component="span" sx={{ ml: 1 }}>
+        <Typography variant="h6" component="span" sx={{ ml: 1, color:'#121212b8' }}>
           Dimenzije
         </Typography>
+        <FilterAltIcon color="secondary" />
       </Box>
 
       <Collapse in={drawerOpen} timeout="auto" unmountOnExit>
