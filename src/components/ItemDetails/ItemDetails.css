@@ -10,6 +10,8 @@
   box-sizing: border-box;
 }
 
+
+
 /* Wrapper for image section and details */
 .item-details-wrapper {
   display: flex;
@@ -205,9 +207,8 @@
   text-align: center;
 }
 
-
 .details-option-group label{
-  width: 150px;
+  width: 200px;
 }
 
 .related-products-list {

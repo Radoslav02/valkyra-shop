@@ -138,6 +138,10 @@ nav {
     cursor: pointer;
 }
 
+.dropdown-item:hover{
+    background-color: #f9f9f9;
+}
+
 /* === Responsive Rules === */
 @media (max-width: 768px) {
     .desktop-menu {
