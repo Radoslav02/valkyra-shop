@@ -246,7 +246,7 @@ export default function ItemDetails() {
             {/* CUSTOM TITLE INPUT */}
             {product.titleSelection && (
               <div className="details-option-group">
-                <label>Unesite natpis za proizvod(opciono):</label>
+                <label>Unesite natpis za proizvod (opciono):</label>
                 <input
                   type="text"
                   value={customTitle}
