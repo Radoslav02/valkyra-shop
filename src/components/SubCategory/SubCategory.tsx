@@ -54,7 +54,7 @@ export default function SubCategoryPage() {
 
         setProducts(fetchedProducts);
       } catch (error) {
-        console.error("Error fetching products for subcategory:", error);
+        console.error("Error fetching products for subcategory", error);
       } finally {
         setLoading(false);
       }
