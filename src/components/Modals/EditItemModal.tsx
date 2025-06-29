@@ -33,6 +33,7 @@ type Product = {
   dimensions?: string;
   scriptSelection?: boolean;
   titleSelection?: boolean;
+  dateSelection?: boolean;
   relatedProducts?: {
     productId: string;
     name: string;
@@ -66,7 +67,7 @@ const categoriesData = [
       "Štampa i sečenje nalepnica",
       "Nalepnice za dečije sobe",
       "3D nalepnice - stikeri",
-      "Lepljenje folija",
+      "Nalepnice za automobile",
     ],
   },
 ];
@@ -100,9 +101,12 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
   const [titleSelection, setTitleSelection] = useState(
     product.titleSelection || false
   );
+  const [dateSelection, setDateSelection] = useState(
+    product.dateSelection || false
+  );
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  
+
   //Disables scrolling on the body when the modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -296,6 +300,7 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
         dimensions,
         scriptSelection,
         titleSelection,
+        dateSelection,
         relatedProducts: relatedProducts.map((prod) => ({
           productId: prod.productId,
           name: prod.name,
@@ -457,7 +462,20 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
                 color="primary"
               />
             }
-            label="Unos natpisa proizvoda"
+            label="Unos natpisa na proizvodu"
+          />
+        </div>
+
+        <div className="edit-item-input-wrapper">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={dateSelection}
+                onChange={(e) => setDateSelection(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Unos datuma na proizvodu"
           />
         </div>
 

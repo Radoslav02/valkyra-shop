@@ -8,6 +8,11 @@ import { toast } from "react-toastify";
 import "./ItemDetails.css";
 import { db } from "../../firebase";
 
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import type { Dayjs } from "dayjs";
+
 type Product = {
   productId: string;
   name: string;
@@ -22,6 +27,7 @@ type Product = {
   dimensions?: string;
   scriptSelection?: boolean;
   titleSelection?: boolean;
+  dateSelection?: boolean;
   relatedProducts?: {
     productId: string;
     name: string;
@@ -38,6 +44,7 @@ export default function ItemDetails() {
   const [selectedDimension, setSelectedDimension] = useState<string>("");
   const [selectedScript, setSelectedScript] = useState<string>("");
   const [customTitle, setCustomTitle] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -67,6 +74,7 @@ export default function ItemDetails() {
             scriptSelection: data.scriptSelection || false,
             titleSelection: data.titleSelection || false,
             relatedProducts: data.relatedProducts || [],
+            dateSelection: data.dateSelection || false,
           });
           setSelectedImage(data.images?.[0] || null);
         } else {
@@ -102,12 +110,6 @@ export default function ItemDetails() {
       toast.error("Molimo vas da odaberete dimenziju.");
       return;
     }
-
-    if (product.titleSelection && !customTitle.trim()) {
-      toast.error("Molimo vas da unesete natpis.");
-      return;
-    }
-
     if (product.scriptSelection && !selectedScript) {
       toast.error("Molimo vas da izaberete pismo.");
       return;
@@ -126,12 +128,12 @@ export default function ItemDetails() {
         selectedDimension: product.dimensions ? selectedDimension : undefined,
         selectedScript: product.scriptSelection ? selectedScript : undefined,
         customTitle: product.titleSelection ? customTitle : undefined,
+        selectedDate: product.dateSelection ? selectedDate?.format("DD/MM/YYYY") : undefined,
       })
     );
 
     toast.success("Proizvod je uspešno dodat u korpu!");
-    setTimeout(() => {
-    }, 1500);
+    setTimeout(() => {}, 1500);
   };
 
   return (
@@ -180,11 +182,9 @@ export default function ItemDetails() {
             ) : (
               <p className="product-price">{formatPrice(product.price)}</p>
             )}
-
             {product.description && (
               <p className="product-desc">{product.description}</p>
             )}
-
             <div className="quantity-actions">
               <label>Količina:</label>
               <div className="quantity-input-wrapper">
@@ -210,7 +210,6 @@ export default function ItemDetails() {
                 </button>
               </div>
             </div>
-
             {/* DIMENZIJE DROPDOWN */}
             {product.dimensions && (
               <div className="details-option-group">
@@ -229,7 +228,6 @@ export default function ItemDetails() {
                 </select>
               </div>
             )}
-
             {/* SCRIPT SELECTION */}
             {product.scriptSelection && (
               <div className="details-option-group">
@@ -245,11 +243,10 @@ export default function ItemDetails() {
                 </select>
               </div>
             )}
-
             {/* CUSTOM TITLE INPUT */}
             {product.titleSelection && (
               <div className="details-option-group">
-                <label>Unesite natpis za proizvod:</label>
+                <label>Unesite natpis za proizvod(opciono):</label>
                 <input
                   type="text"
                   value={customTitle}
@@ -258,7 +255,24 @@ export default function ItemDetails() {
                 />
               </div>
             )}
-
+            {/* DATE SELECTION */}
+            {product.dateSelection && (
+              <div className="details-option-group">
+                <label>Unesite datum za proizvod (opciono):</label>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    className="date-picker"
+                    value={selectedDate}
+                    onChange={(newValue) => setSelectedDate(newValue)}
+                    format="DD/MM/YYYY"
+                    sx={{
+                      width: "150px", // Postavljanje širine
+                      height: "30px", // Postavljanje visine
+                    }}
+                  />
+                </LocalizationProvider>
+              </div>
+            )}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
               <div className="related-products-section">
                 <label>Boje:</label>
@@ -275,7 +289,6 @@ export default function ItemDetails() {
                 </div>
               </div>
             )}
-
             <button className="add-to-cart-button" onClick={handleAddToCart}>
               Dodaj u korpu
             </button>

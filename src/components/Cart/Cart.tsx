@@ -21,7 +21,7 @@ export default function Cart() {
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const deliveryCost = 350.0;
+  const deliveryCost = 620.0;
   const finalTotal = totalPrice + deliveryCost;
 
   const formatPrice = (price: number) =>
@@ -91,6 +91,9 @@ export default function Cart() {
                 </p>
                 <p className="cart-item-title">
                   {item.customTitle ? `Naslov: ${item.customTitle}` : ""}
+                </p>
+                  <p className="cart-item-date">
+                  {item.selectedDate ? `Datum: ${item.selectedDate}` : ""}
                 </p>
               </div>
               <div

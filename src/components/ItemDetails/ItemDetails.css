@@ -201,8 +201,13 @@
   box-sizing: border-box;
   transition: border 0.2s ease;
   height: 30px;
-  width: 150px;
+  width: 150px; 
   text-align: center;
+}
+
+
+.details-option-group label{
+  width: 150px;
 }
 
 .related-products-list {

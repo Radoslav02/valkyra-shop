@@ -7,15 +7,24 @@ interface TermsModalProps {
 }
 
 function TermsModal({ isOpen, close }: TermsModalProps) {
-  if (!isOpen) return null;
+   useEffect(() => {
+    // Disable scroll on the html and body when modal is open
+    if (isOpen) {
+      document.documentElement.style.overflow = "hidden"; // More reliable than targeting body
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "auto"; // Ensure scroll is re-enabled
+      document.body.style.overflow = "auto";
+    }
 
-  //Disables scrolling on the body when the modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
+    // Cleanup on modal close or component unmount
     return () => {
+      document.documentElement.style.overflow = "auto";
       document.body.style.overflow = "auto";
     };
-  }, []);
+  }, [isOpen]); // Re-run effect when isOpen changes
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={close}>

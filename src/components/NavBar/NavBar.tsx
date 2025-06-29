@@ -69,7 +69,7 @@ const navItems = [
         label: "3D nalepnice - stikeri",
         route: "/podkategorija/3D nalepnice - stikeri",
       },
-      { label: "Lepljenje folija", route: "/podkategorija/Lepljenje folija" },
+      { label: "Nalepnice za automobile", route: "/podkategorija/Nalepnice za automobile" },
     ],
   },
 ];

@@ -13,6 +13,7 @@ interface CartItem {
   customTitle?: string;
   onDiscount?: boolean;
   discountPrice?: number;
+  selectedDate?: string; // Optional date selection
 }
 
 interface CartState {

@@ -17,6 +17,7 @@ interface Product {
   dimensions?: string;
   scriptSelection?: boolean;
   titleSelection?: boolean;
+  dateSelection?: boolean;
   relatedProducts?: {
     productId: string;
     name: string;
@@ -64,7 +65,7 @@ const categoriesData = [
       "Štampa i sečenje nalepnica",
       "Nalepnice za dečije sobe",
       "3D nalepnice - stikeri",
-      "Lepljenje folija",
+      "Nalepnice za automobile",
     ],
   },
 ];
@@ -90,6 +91,7 @@ const NewItemModal: React.FC<{
   const [titleSelection, setTitleSelection] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [dateSelection, setDateSelection] = useState(false);
 
   //Disables scrolling on the body when the modal is open
   useEffect(() => {
@@ -233,6 +235,7 @@ const NewItemModal: React.FC<{
         dimensions,
         scriptSelection,
         titleSelection,
+        dateSelection,
         relatedProducts: relatedProducts.map((prod) => ({
           productId: prod.productId,
           name: prod.name,
@@ -373,7 +376,19 @@ const NewItemModal: React.FC<{
                 color="primary"
               />
             }
-            label="Unos natpisa proizvoda"
+            label="Unos natpisa na proizvodu"
+          />
+        </div>
+         <div className="new-item-input-wrapper">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={dateSelection}
+                onChange={(e) => setDateSelection(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Unos datuma na proizvodu"
           />
         </div>
         <div className="new-item-input-wrapper">

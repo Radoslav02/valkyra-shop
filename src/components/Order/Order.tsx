@@ -40,77 +40,82 @@ const Order = () => {
   const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State for checkbox
 
   const sendEmail = async () => {
-  if (!items || items.length === 0) {
-    toast.error("Nema poručenih proizvoda.");
-    return;
-  }
+    if (!items || items.length === 0) {
+      toast.error("Nema poručenih proizvoda.");
+      return;
+    }
 
-  if (!isTermsAccepted) {
-    toast.error("Morate prihvatiti uslove korišćenja pre nego što nastavite.");
-    return;
-  }
+    if (!isTermsAccepted) {
+      toast.error(
+        "Morate prihvatiti uslove korišćenja pre nego što nastavite."
+      );
+      return;
+    }
 
-  const orderData = {
-    customer,
-    total,
-    items: items.map((item) => ({
-      id: item.productId,
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price,
-      selectedDimension: item.selectedDimension || null,
-      selectedScript: item.selectedScript || null,
-      customTitle: item.customTitle || null,
-    })),
-    timestamp: new Date().toISOString(),
-  };
-
-  try {
-    await addDoc(collection(db, "orders"), orderData);
-
-    const templateParams = {
-      customerEmail: customer?.email,
-      customerName: customer?.name,
-      customerNumber: customer?.number,
-      customerPhoneNumber: customer?.phoneNumber,
-      customerPlace: customer?.place,
-      customerPostalCode: customer?.postalCode,
-      customerStreet: customer?.street,
-      customerSurname: customer?.surname,
+    const orderData = {
+      customer,
       total,
-      items: items
-        .map((item) => {
-          const dimensions = item.selectedDimension
-            ? `Dimenzija: ${item.selectedDimension}`
-            : "Nema dimenzije";
-          const script = item.selectedScript
-            ? `Pismo: ${item.selectedScript}`
-            : "Nema pisma";
-          const customTitle = item.customTitle
-            ? `Natpis: ${item.customTitle}`
-            : "Nema natpisa";
-
-          return `Naziv: ${item.name}, Količina: ${item.quantity}, Cena: ${item.price}, ${dimensions}, ${script}, ${customTitle}`;
-        })
-        .join("\n"),
+      items: items.map((item) => ({
+        id: item.productId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        selectedDimension: item.selectedDimension || null,
+        selectedScript: item.selectedScript || null,
+        customTitle: item.customTitle || null,
+        selectedDate: item.selectedDate || null,
+      })),
+      timestamp: new Date().toISOString(),
     };
 
-    await emailjs.send(
-      "service_mqkqlir",
-      "template_qowqqcs",
-      templateParams,
-      "1tiA01x6TVNOrRdyO"
-    );
+    try {
+      await addDoc(collection(db, "orders"), orderData);
 
-    dispatch(clearCart());
-    setIsEmailSent(true);
-    navigate("/potvrda");
-  } catch (error: any) {
-    console.error("Greška pri slanju porudžbine:", error);
-    toast.error(`Greška: ${error.message || "Neuspelo slanje"}`);
-  }
-};
+      const templateParams = {
+        customerEmail: customer?.email,
+        customerName: customer?.name,
+        customerNumber: customer?.number,
+        customerPhoneNumber: customer?.phoneNumber,
+        customerPlace: customer?.place,
+        customerPostalCode: customer?.postalCode,
+        customerStreet: customer?.street,
+        customerSurname: customer?.surname,
+        total,
+        items: items
+          .map((item) => {
+            const dimensions = item.selectedDimension
+              ? `Dimenzija: ${item.selectedDimension}`
+              : "Nema dimenzije";
+            const script = item.selectedScript
+              ? `Pismo: ${item.selectedScript}`
+              : "Nema pisma";
+            const customTitle = item.customTitle
+              ? `Natpis: ${item.customTitle}`
+              : "Nema natpisa";
+            const selectedDate = item.selectedDate
+              ? `Datum: ${item.selectedDate}`
+              : "Nema datuma";
 
+            return `Naziv: ${item.name}, Količina: ${item.quantity}, Cena: ${item.price}, ${dimensions}, ${script}, ${customTitle}, ${selectedDate}`;
+          })
+          .join("\n"),
+      };
+
+      await emailjs.send(
+        "service_mqkqlir",
+        "template_qowqqcs",
+        templateParams,
+        "1tiA01x6TVNOrRdyO"
+      );
+
+      dispatch(clearCart());
+      setIsEmailSent(true);
+      navigate("/potvrda");
+    } catch (error: any) {
+      console.error("Greška pri slanju porudžbine:", error);
+      toast.error(`Greška: ${error.message || "Neuspelo slanje"}`);
+    }
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("sr-RS", {
@@ -182,7 +187,7 @@ const Order = () => {
       </div>
 
       {/* Terms Modal */}
-      <TermsModal  isOpen={isModalOpen} close={handleModalClose} />
+      <TermsModal isOpen={isModalOpen} close={handleModalClose} />
     </div>
   );
 };
