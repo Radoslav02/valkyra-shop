@@ -1,4 +1,4 @@
-.register-container {
+.customer-info-container {
   min-height: calc(100vh - 371px);
   width: 100%;
   background-color: #f9f9f9;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-.register-form {
+.customer-info-form {
   width: 100%;
   max-width: 700px;
   background-color: #fff;
@@ -23,7 +23,7 @@
 }
 
 /* Title styling */
-.register-title {
+.customer-info-title {
   font-size: 1.8rem;
   text-align: center;
   margin: 0;
@@ -31,14 +31,14 @@
 }
 
 /* Main wrapper for inputs */
-.inputs-wrapper {
+.customer-info-inputs {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 /* Each row for grouping two fields horizontally */
-.register-row {
+.customer-info-row {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -46,20 +46,20 @@
 }
 
 /* Input wrapper for each field */
-.register-input-wrapper {
+.customer-info-input-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
   gap: 6px;
 }
 
-.register-input-wrapper label {
+.customer-info-input-wrapper label {
   font-size: 0.95rem;
   color: #555;
   font-weight: 500;
 }
 
-.register-input {
+.customer-info-input-wrapper input {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -68,7 +68,7 @@
   transition: border-color 0.2s ease;
 }
 
-.register-input:focus {
+.customer-info-input-wrapper input:focus {
   outline: none;
   border-color: #e7cfb4;
 }
@@ -80,7 +80,7 @@
 }
 
 /* Submit button */
-.register-page-button {
+.customer-info-submit-button {
   align-self: center;
   margin-top: 10px;
   padding: 10px 20px;
@@ -94,24 +94,41 @@
   transition: background-color 0.2s ease;
 }
 
-.register-page-button:hover {
+.customer-info-submit-button:hover {
   background-color: #d6ac7c;
+}
+
+/* Terms & conditions */
+.customer-info-terms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+/* Loading spinner wrapper */
+.customer-info-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #555;
 }
 
 /* Responsive breakpoints */
 @media (max-width: 576px) {
-  .register-form {
+  .customer-info-form {
     padding: 20px;
   }
 
-  .register-row {
+  .customer-info-row {
     flex-direction: column;
     gap: 10px;
   }
 }
 
 @media (min-width: 577px) and (max-width: 991px) {
-  .register-form {
+  .customer-info-form {
     max-width: 500px;
   }
 }

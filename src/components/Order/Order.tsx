@@ -5,8 +5,7 @@ import emailjs from "@emailjs/browser";
 import { clearCart } from "../Redux/cartSlice";
 import "./Order.css";
 import type { RootState } from "../Redux/store";
-import TermsModal from "../Modals/TermsModal";
-import { Button, Checkbox } from "@mui/material";
+import { Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -36,19 +35,10 @@ const Order = () => {
   const items = useSelector((state: RootState) => state.cart.items);
 
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State for checkbox
 
   const sendEmail = async () => {
     if (!items || items.length === 0) {
       toast.error("Nema poručenih proizvoda.");
-      return;
-    }
-
-    if (!isTermsAccepted) {
-      toast.error(
-        "Morate prihvatiti uslove korišćenja pre nego što nastavite."
-      );
       return;
     }
 
@@ -95,10 +85,18 @@ const Order = () => {
             const selectedDate = item.selectedDate
               ? `Datum: ${item.selectedDate}`
               : "Nema datuma";
+            const imageTag = item.image
+              ? `<img src="${item.image}" alt="${item.name}" style="width:120px; height:auto; display:block; margin-bottom:10px;" />`
+              : "<em>Nema slike</em>";
 
-            return `Naziv: ${item.name}, Količina: ${item.quantity}, Cena: ${item.price}, ${dimensions}, ${script}, ${customTitle}, ${selectedDate}`;
+            return `
+        ${imageTag}
+        <div><strong>Naziv:</strong> ${item.name}, <strong>Količina:</strong> ${item.quantity}, <strong>Cena:</strong> ${item.price} RSD, <strong>${dimensions}</strong>, <strong>${script}</strong>, <strong>${customTitle}</strong>, <strong>${selectedDate}</strong></div>
+        <hr />
+      
+    `;
           })
-          .join("\n"),
+          .join(""),
       };
 
       await emailjs.send(
@@ -126,13 +124,6 @@ const Order = () => {
     }).format(price);
   };
 
-  const handleModalOpen = () => setModalOpen(true);
-  const handleModalClose = () => setModalOpen(false);
-
-  const handleCheckboxChange = () => {
-    setIsTermsAccepted((prev) => !prev); // Toggle the checkbox state
-  };
-
   return (
     <div className="order-container">
       <h2>Detalji porudžbine</h2>
@@ -155,17 +146,6 @@ const Order = () => {
         <p>Nema podataka o klijentu.</p>
       )}
 
-      <div className="terms-checkbox-container">
-        <Checkbox
-          id="termsCheckbox"
-          checked={isTermsAccepted}
-          onChange={handleCheckboxChange}
-        />
-        <label htmlFor="termsCheckbox" onClick={handleModalOpen}>
-          Prihvatam uslove korišćenja
-        </label>
-      </div>
-
       <div className="order-button-wrapper">
         <Button
           variant="contained"
@@ -185,9 +165,6 @@ const Order = () => {
 
         {/* Checkbox and label for Terms Acceptance */}
       </div>
-
-      {/* Terms Modal */}
-      <TermsModal isOpen={isModalOpen} close={handleModalClose} />
     </div>
   );
 };

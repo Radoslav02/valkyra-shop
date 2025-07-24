@@ -110,10 +110,6 @@ export default function ItemDetails() {
       toast.error("Molimo vas da odaberete dimenziju.");
       return;
     }
-    if (product.scriptSelection && !selectedScript) {
-      toast.error("Molimo vas da izaberete pismo.");
-      return;
-    }
     if (!product) return;
     dispatch(
       addToCart({
@@ -235,7 +231,6 @@ export default function ItemDetails() {
                 <select
                   value={selectedScript}
                   onChange={(e) => setSelectedScript(e.target.value)}
-                  required
                 >
                   <option value="">-- Izaberite --</option>
                   <option value="latinica">Latinica</option>

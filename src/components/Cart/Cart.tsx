@@ -33,28 +33,36 @@ export default function Cart() {
     }).format(price);
 
   const handleOrder = () => {
-    const orderDetails = {
-      customer: {
-        email: user?.email,
-        name: user?.name,
-        number: user?.number,
-        phoneNumber: user?.phoneNumber,
-        place: user?.place,
-        postalCode: user?.postalCode,
-        street: user?.street,
-        surname: user?.surname,
-      },
-      total: finalTotal,
-    };
-    navigate("/poručivanje", { state: orderDetails });
+    if (user) {
+      const orderDetails = {
+        customer: {
+          email: user.email,
+          name: user.name || "",
+          number: user.number || "",
+          phoneNumber: user.phoneNumber || "",
+          place: user.place || "",
+          postalCode: user.postalCode || "",
+          street: user.street || "",
+          surname: user.surname || "",
+        },
+        total: finalTotal,
+      };
+
+      navigate("/poručivanje", { state: orderDetails });
+    } else {
+      // korisnik nije ulogovan → vodi na formu
+      const orderDetails = {
+        total: finalTotal,
+      };
+
+      navigate("/podaci", { state: orderDetails });
+    }
   };
 
   return (
     <div className="cart-container">
       <h2>Vaša korpa</h2>
-      {!user ? (
-        <p>Morate biti prijavljeni da biste videli vašu korpu.</p>
-      ) : cartItems.length === 0 ? (
+      {cartItems.length === 0 ? (
         <p>Vaša korpa je prazna</p>
       ) : (
         <div className="cart-items-wrapper">
@@ -92,7 +100,7 @@ export default function Cart() {
                 <p className="cart-item-title">
                   {item.customTitle ? `Naslov: ${item.customTitle}` : ""}
                 </p>
-                  <p className="cart-item-date">
+                <p className="cart-item-date">
                   {item.selectedDate ? `Datum: ${item.selectedDate}` : ""}
                 </p>
               </div>

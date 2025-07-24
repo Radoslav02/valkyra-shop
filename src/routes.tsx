@@ -12,6 +12,7 @@ import SubCategoryPage from "./components/SubCategory/SubCategory";
 import ItemDetails from "./components/ItemDetails/ItemDetails";
 import HomePage from "./components/Home/Home";
 import Order from "./components/Order/Order";
+import CustomerInfo from "./components/CustomerInfo/CustomerInfo";
 
 export const router = createHashRouter([
   {
@@ -65,6 +66,10 @@ export const router = createHashRouter([
       {
         path: "/poručivanje",
         element: <Order />,
+      },
+      {
+        path: "/podaci",
+        element: <CustomerInfo />,
       },
     ],
   },
