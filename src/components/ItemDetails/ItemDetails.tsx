@@ -260,10 +260,7 @@ export default function ItemDetails() {
                     value={selectedDate}
                     onChange={(newValue) => setSelectedDate(newValue)}
                     format="DD/MM/YYYY"
-                    sx={{
-                      width: "150px", // Postavljanje širine
-                      height: "30px", // Postavljanje visine
-                    }}
+                   
                   />
                 </LocalizationProvider>
               </div>

@@ -34,23 +34,22 @@ function TermsModal({ isOpen, close }: TermsModalProps) {
           <strong>1. Uvod</strong>
         </p>
         <p>
-          Dobrodošli na našu web stranicu. Ovi uslovi korišćenja ("Uslovi")
-          regulišu vašu upotrebu naše web stranice ("Stranica") i naših usluga
-          ("Usluge"). Pristupom i korišćenjem ove Stranice, slažete se da budete
+          Dobrodošli na našu web stranicu. Ovi uslovi korišćenja
+          regulišu vašu upotrebu naše web stranice i naših usluga. Pristupom i korišćenjem ove stranice, slažete se da budete
           u obavezi da se pridržavate ovih Uslova. Ukoliko se ne slažete sa
-          uslovima, molimo vas da ne koristite ovu Stranicu.
+          uslovima, molimo vas da ne koristite ovu stranicu.
         </p>
 
         <p>
           <strong>2. Korišćenje Stranice</strong>
         </p>
         <p>
-          Koristite Stranicu u skladu sa važećim zakonima. Korišćenje Stranice
+          Koristite stranicu u skladu sa važećim zakonima. Korišćenje Stranice
           za nezakonite ili neovlašćene aktivnosti je zabranjeno.
         </p>
 
         <p>
-          <strong>3. Registracija i Bezbednost Računa</strong>
+          <strong>3. Registracija i Bezbednost</strong>
         </p>
         <p>
           Da biste koristili određene funkcionalnosti na Stranici, kao što su
