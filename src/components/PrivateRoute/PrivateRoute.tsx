@@ -22,7 +22,7 @@ const PrivateRoute: FC<PrivateRouteProps> = ({ children, adminOnly }) => {
 
   if (adminOnly && !isAdmin) {
     // Ako je ruta za admin, ali korisnik nije admin, preusmeri na početnu
-    return <Navigate to="/početna" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

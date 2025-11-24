@@ -27,7 +27,7 @@ export default function Header() {
 
   return (
     <div className="header-container">
-      <div className="logo-container" onClick={() => navigate("/početna")}>
+      <div className="logo-container" onClick={() => navigate("/")}>
         <img src={LogoX} alt="Logo" className="logo-picture" />
         {/* <h1>shop</h1> */}
       </div>

@@ -20,6 +20,10 @@ export const router = createHashRouter([
     element: <App />,
     children: [
       {
+        index: true,
+        element: <HomePage />,
+      },
+      {
         path: "/početna",
         element: <HomePage />,
       },

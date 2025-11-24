@@ -122,7 +122,7 @@ export default function Cart() {
             <Button
               variant="contained"
               className="to-home-button"
-              onClick={() => navigate("/početna")}
+              onClick={() => navigate("/")}
             >
               Početna
             </Button>

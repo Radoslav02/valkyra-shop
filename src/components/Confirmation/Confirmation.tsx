@@ -6,7 +6,7 @@ const Confirmation = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate('/početna'); 
+    navigate('/'); 
   };
 
   return (

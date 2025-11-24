@@ -4,9 +4,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../Redux/authSlice';
 import './LogIn.css';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
@@ -29,7 +27,6 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [inputEmail, setInputEmail] = useState<string>('');
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormData) => {
@@ -49,25 +46,13 @@ const LoginPage = () => {
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
 
-        // Dispatch the full user object to Redux
-        dispatch(
-          login({
-            email: user.email!,
-            isAdmin: userData.isAdmin,
-            name: userData.name,
-            number: userData.number,
-            phoneNumber: userData.phoneNumber,
-            place: userData.place,
-            postalCode: userData.postalCode,
-            street: userData.street,
-            surname: userData.surname,
-          })
-        );
-
+        // Firebase Auth listener će automatski učitati podatke
+        // Ne trebamo ručno da pozivamo dispatch(login())
+        
         if (userData.isAdmin) {
           navigate('/admin/panel');
         } else {
-          navigate('/početna');
+          navigate('/');
         }
       } else {
         toast.error('Ne postoje informacije o ovom korisniku.');

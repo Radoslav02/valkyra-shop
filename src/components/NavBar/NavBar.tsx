@@ -6,7 +6,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 const navItems = [
   {
     label: "Početna",
-    route: "/početna",
+    route: "/",
     subItems: [],
   },
   {
