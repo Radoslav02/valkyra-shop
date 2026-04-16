@@ -84,7 +84,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{ marginTop: "100px" }}
+        className="custom-toast-container"
         limit={1}
       />
     </div>

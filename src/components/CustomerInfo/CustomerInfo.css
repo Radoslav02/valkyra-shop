@@ -1,0 +1,169 @@
+/* Container for the entire customer info page */
+.customer-info-container {
+  min-height: calc(100vh - 371px);
+  width: 100%;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+/* Form card */
+.customer-info-form {
+  width: 100%;
+  max-width: 650px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/* Title */
+.customer-info-title {
+  font-size: 1.8rem;
+  text-align: center;
+  margin: 0;
+  color: #333;
+}
+
+/* Delivery method */
+.customer-info-delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.customer-info-delivery > label {
+  font-size: 0.95rem;
+  color: #555;
+  font-weight: 600;
+}
+
+/* Wrapper for all inputs */
+.customer-info-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Each row groups two fields side by side */
+.customer-info-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Individual input wrapper */
+.customer-info-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+
+.customer-info-input-wrapper label {
+  font-size: 0.95rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.customer-info-input-wrapper input {
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.customer-info-input-wrapper input:focus {
+  outline: none;
+  border-color: #e7cfb4;
+}
+
+/* Error messages */
+.customer-info-form .error {
+  color: #d86a6a;
+  font-size: 0.85rem;
+  margin-top: -2px;
+}
+
+/* Terms checkbox */
+.customer-info-terms {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.customer-info-terms label {
+  cursor: pointer;
+  color: #c09463;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.customer-info-terms label:hover {
+  color: #a07040;
+}
+
+/* Submit button */
+.customer-info-submit-button {
+  align-self: center;
+  width: 100%;
+  max-width: 300px;
+  height: 44px;
+  border: none;
+  border-radius: 6px;
+  background-color: #e7cfb4;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.customer-info-submit-button:hover {
+  background-color: #d6ac7c;
+}
+
+.customer-info-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.customer-info-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #555;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .customer-info-form {
+    padding: 20px;
+  }
+
+  .customer-info-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+  .customer-info-form {
+    max-width: 550px;
+  }
+}

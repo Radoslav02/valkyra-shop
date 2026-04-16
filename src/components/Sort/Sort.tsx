@@ -1,37 +1,49 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { Box, FormControl, InputLabel, Select, MenuItem, type SelectChangeEvent } from "@mui/material";
+import SortIcon from "@mui/icons-material/Sort";
+import { Box, Typography, Collapse } from "@mui/material";
+import "./Sort.css";
 
 interface SortProps {
   onSortChange: (sortBy: string) => void;
 }
 
+const sortOptions = [
+  { value: "nameAsc", label: "Naziv: A-Z" },
+  { value: "nameDesc", label: "Naziv: Z-A" },
+  { value: "priceAsc", label: "Cena: manja-veća" },
+  { value: "priceDesc", label: "Cena: veća-manja" },
+];
+
 const Sort: React.FC<SortProps> = ({ onSortChange }) => {
   const [sortValue, setSortValue] = useState("nameAsc");
+  const [open, setOpen] = useState(window.innerWidth > 768);
 
-  const handleSortChange = (event: SelectChangeEvent) => {
-    const value = event.target.value;
+  const handleSelect = (value: string) => {
     setSortValue(value);
     onSortChange(value);
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 200, mx: "auto", textAlign: "center" }}>
-        <FormControl fullWidth>
-          <InputLabel id="sort-select-label">Sortiraj</InputLabel>
-          <Select
-            labelId="sort-select-label"
-            id="sort-select"
-            value={sortValue}
-            label="Sortiraj"
-            onChange={handleSortChange}
-          >
-            <MenuItem value="nameAsc">Naziv: A-Z</MenuItem>
-            <MenuItem value="nameDesc">Naziv: Z-A</MenuItem>
-            <MenuItem value="priceAsc">Cena: manja-veća</MenuItem>
-            <MenuItem value="priceDesc">Cena: veća-manja</MenuItem>
-          </Select>
-        </FormControl>
+    <Box className="sort-container">
+      <Box className="sort-header" onClick={() => setOpen(!open)}>
+        <Typography variant="h6" component="span" sx={{ ml: 1, color: "#121212b8" }}>
+          Sortiraj
+        </Typography>
+        <SortIcon color="secondary" />
+      </Box>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <Box className="sort-options">
+          {sortOptions.map((opt) => (
+            <div
+              key={opt.value}
+              className={`sort-option ${sortValue === opt.value ? "sort-option-active" : ""}`}
+              onClick={() => handleSelect(opt.value)}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </Box>
+      </Collapse>
     </Box>
   );
 };

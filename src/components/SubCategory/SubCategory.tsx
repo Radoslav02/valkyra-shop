@@ -22,7 +22,8 @@ type Product = {
   category: string;
   size: string[];
   manufacturer: string;
-  dimensions?: string; 
+  dimensions?: string;
+  sizeOptions?: { size: string; price: number }[];
 };
 
 export default function SubCategoryPage() {
@@ -31,6 +32,13 @@ export default function SubCategoryPage() {
   const [sortBy, setSortBy] = useState<string>("nameAsc");
 
   const [dimensionFilter, setDimensionFilter] = useState<string[]>([]);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setMobileFilterOpen((prev) => !prev);
+    window.addEventListener("toggle-mobile-filter", handler);
+    return () => window.removeEventListener("toggle-mobile-filter", handler);
+  }, []);
 
   const navigate = useNavigate();
   const { subCategory } = useParams<{ subCategory: string }>();
@@ -63,11 +71,13 @@ export default function SubCategoryPage() {
     fetchProducts();
   }, [subCategory]);
 
-  // Compute unique dimensions from the fetched products
+  // Compute unique dimensions from sizeOptions or old dimensions field
   const availableDimensions = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => {
-      if (p.dimensions) {
+      if (p.sizeOptions && p.sizeOptions.length > 0) {
+        p.sizeOptions.forEach((opt) => set.add(opt.size));
+      } else if (p.dimensions) {
         p.dimensions.split(",").forEach((d) => {
           set.add(d.trim());
         });
@@ -83,11 +93,13 @@ export default function SubCategoryPage() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
+      const productSizes = product.sizeOptions && product.sizeOptions.length > 0
+        ? product.sizeOptions.map((o) => o.size)
+        : product.dimensions
+          ? product.dimensions.split(",").map((d) => d.trim())
+          : [];
       const matchesDimensions = dimensionFilter.length
-        ? product.dimensions
-            ?.split(",")
-            .map((d) => d.trim())
-            .some((d) => dimensionFilter.includes(d))
+        ? productSizes.some((s) => dimensionFilter.includes(s))
         : true;
 
       return matchesSearch && matchesDimensions;
@@ -128,7 +140,7 @@ export default function SubCategoryPage() {
       ) : (
         <div className="sub-page-wrapper">
           {/* Sidebar: Sort on top, Filter for dimensions below */}
-          <div className="sidebar">
+          <div className={`sidebar ${mobileFilterOpen ? "sidebar-mobile-open" : ""}`}>
             <div className="sort-filter-wrapper">
               <Sort onSortChange={setSortBy} />
               <Filter

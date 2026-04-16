@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./NavBar.css";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import TuneIcon from "@mui/icons-material/Tune";
 
 const navItems = [
   {
@@ -28,6 +29,10 @@ const navItems = [
       {
         label: "Toperi za tortu",
         route: "/podkategorija/Toperi za tortu",
+      },
+      {
+        label: "Magnetići za proslave",
+        route: "/podkategorija/Magnetići za proslave",
       },
     ],
   },
@@ -160,13 +165,25 @@ export default function NavBar() {
 
       {/* Mobile Menu */}
       <div className="mobile-menu">
-        <div
-          className="hamburger-icon"
-          onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
+        <div className="mobile-toolbar">
+          <div
+            className="hamburger-icon"
+            onClick={() => {
+              setMobileMenuOpen(!isMobileMenuOpen);
+            }}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div
+            className="mobile-filter-icon"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("toggle-mobile-filter"));
+            }}
+          >
+            <TuneIcon sx={{ fontSize: 30, color: "#333" }} />
+          </div>
         </div>
         {isMobileMenuOpen && (
           <div className="mobile-nav-items">

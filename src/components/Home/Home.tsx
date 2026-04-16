@@ -19,9 +19,11 @@ type Product = {
   gender: string;
   type: string;
   category: string;
+  subcategory: string;
   size: string[];
   manufacturer: string;
-  dimensions: string; // Adding dimensions field
+  dimensions?: string;
+  sizeOptions?: { size: string; price: number }[];
 };
 
 export default function HomePage() {
@@ -31,8 +33,16 @@ export default function HomePage() {
   // Sorting
   const [sortBy, setSortBy] = useState<string>("nameAsc");
 
-  // Dimension filter
+  // Filters
   const [dimensionFilter, setDimensionFilter] = useState<string[]>([]);
+  const [subcategoryFilter, setSubcategoryFilter] = useState<string[]>([]);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setMobileFilterOpen((prev) => !prev);
+    window.addEventListener("toggle-mobile-filter", handler);
+    return () => window.removeEventListener("toggle-mobile-filter", handler);
+  }, []);
 
   // Global search from Redux
   const searchQuery = useSelector((state: RootState) => state.search.query);
@@ -60,11 +70,13 @@ export default function HomePage() {
     fetchProducts();
   }, []);
 
-  // Compute unique dimensions
+  // Compute unique dimensions from sizeOptions or old dimensions field
   const availableDimensions = useMemo(() => {
     const uniqueSet = new Set<string>();
     products.forEach((p) => {
-      if (p.dimensions) {
+      if (p.sizeOptions && p.sizeOptions.length > 0) {
+        p.sizeOptions.forEach((opt) => uniqueSet.add(opt.size));
+      } else if (p.dimensions) {
         p.dimensions.split(",").forEach((dimension) => {
           uniqueSet.add(dimension.trim());
         });
@@ -73,21 +85,36 @@ export default function HomePage() {
     return Array.from(uniqueSet);
   }, [products]);
 
-  // Filter products by search query and dimensions
+  // Compute unique subcategories
+  const availableSubcategories = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      if (p.subcategory) set.add(p.subcategory);
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
+  // Filter products by search query, dimensions, and subcategory
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
+      const productSizes = product.sizeOptions && product.sizeOptions.length > 0
+        ? product.sizeOptions.map((o) => o.size)
+        : product.dimensions
+          ? product.dimensions.split(",").map((d) => d.trim())
+          : [];
       const matchesDimension =
         dimensionFilter.length === 0 ||
-        product.dimensions
-          .split(",")
-          .some((dimension) => dimensionFilter.includes(dimension.trim()));
+        productSizes.some((s) => dimensionFilter.includes(s));
+      const matchesSubcategory =
+        subcategoryFilter.length === 0 ||
+        subcategoryFilter.includes(product.subcategory);
 
-      return matchesSearch && matchesDimension;
+      return matchesSearch && matchesDimension && matchesSubcategory;
     });
-  }, [products, searchQuery, dimensionFilter]);
+  }, [products, searchQuery, dimensionFilter, subcategoryFilter]);
 
   // Sort the filtered products
   const sortedProducts = useMemo(() => {
@@ -132,12 +159,14 @@ export default function HomePage() {
       ) : (
         <div className="home-page-wrapper">
           {/* Sidebar with Filter */}
-          <div className="sidebar">
+          <div className={`sidebar ${mobileFilterOpen ? "sidebar-mobile-open" : ""}`}>
             <div className="sort-filter-wrapper">
               <Sort onSortChange={handleSortChange} />
               <Filter
                 availableDimensions={availableDimensions}
                 onFilterChange={handleFilterChange}
+                availableSubcategories={availableSubcategories}
+                onSubcategoryFilterChange={setSubcategoryFilter}
               />
             </div>
           </div>

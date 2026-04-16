@@ -1,17 +1,19 @@
-.customer-info-container {
+/* Container for the entire register page */
+.register-container {
   min-height: calc(100vh - 371px);
   width: 100%;
   background-color: #f9f9f9;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 40px 20px;
   box-sizing: border-box;
 }
 
-.customer-info-form {
+/* Form card */
+.register-form {
   width: 100%;
-  max-width: 700px;
+  max-width: 650px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -22,92 +24,118 @@
   box-sizing: border-box;
 }
 
-/* Title styling */
-.customer-info-title {
+/* Title */
+.register-title {
   font-size: 1.8rem;
   text-align: center;
   margin: 0;
   color: #333;
 }
 
-/* Main wrapper for inputs */
-.customer-info-inputs {
+/* Wrapper for all inputs */
+.inputs-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
-/* Each row for grouping two fields horizontally */
-.customer-info-row {
+/* Each row groups two fields side by side */
+.register-row {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  /* ensures wrapping on small screens */
 }
 
-/* Input wrapper for each field */
-.customer-info-input-wrapper {
+/* Individual input wrapper */
+.register-input-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
   gap: 6px;
+  min-width: 0;
 }
 
-.customer-info-input-wrapper label {
+.register-input-wrapper label {
   font-size: 0.95rem;
   color: #555;
   font-weight: 500;
 }
 
-.customer-info-input-wrapper input {
+/* Input fields */
+.register-input {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 0 10px;
   font-size: 0.95rem;
   transition: border-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.customer-info-input-wrapper input:focus {
+.register-input:focus {
   outline: none;
   border-color: #e7cfb4;
 }
 
-/* Error message styling */
-.error {
+.register-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Error messages */
+.register-form .error {
   color: #d86a6a;
   font-size: 0.85rem;
+  margin-top: -2px;
+}
+
+/* Terms checkbox row */
+.terms-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.terms-checkbox-container label {
+  cursor: pointer;
+  color: #c09463;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.terms-checkbox-container label:hover {
+  color: #a07040;
 }
 
 /* Submit button */
-.customer-info-submit-button {
+.register-page-button {
   align-self: center;
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #e7cfb4;
-  color: #222222;
-  font-size: 1rem;
-  font-weight: 500;
+  width: 100%;
+  max-width: 300px;
+  height: 44px;
   border: none;
   border-radius: 6px;
+  background-color: #e7cfb4;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.customer-info-submit-button:hover {
+.register-page-button:hover {
   background-color: #d6ac7c;
 }
 
-/* Terms & conditions */
-.customer-info-terms {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
+.register-page-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* Loading spinner wrapper */
-.customer-info-loader {
+/* Loading spinner */
+.register-loader {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,20 +143,20 @@
   color: #555;
 }
 
-/* Responsive breakpoints */
+/* Responsive */
 @media (max-width: 576px) {
-  .customer-info-form {
+  .register-form {
     padding: 20px;
   }
 
-  .customer-info-row {
+  .register-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 }
 
 @media (min-width: 577px) and (max-width: 991px) {
-  .customer-info-form {
-    max-width: 500px;
+  .register-form {
+    max-width: 550px;
   }
 }

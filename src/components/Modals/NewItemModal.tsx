@@ -3,6 +3,11 @@ import { useSelector } from "react-redux";
 
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
+interface SizeOption {
+  size: string;
+  price: number;
+}
+
 interface Product {
   productId: string;
   name: string;
@@ -15,6 +20,7 @@ interface Product {
   discountPrice?: number;
   onDiscount?: boolean;
   dimensions?: string;
+  sizeOptions?: SizeOption[];
   scriptSelection?: boolean;
   titleSelection?: boolean;
   dateSelection?: boolean;
@@ -48,6 +54,7 @@ const categoriesData = [
       "Table dobrodošlice i spisak gostiju",
       "Table za obeležavanje stolova",
       "Toperi za tortu",
+      "Magnetići za proslave",
     ],
   },
   {
@@ -79,14 +86,12 @@ const NewItemModal: React.FC<{
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
 
-  const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [dimensions, setDimensions] = useState("");
-  const [dimensionsError, setDimensionsError] = useState("");
+  const [sizeOptions, setSizeOptions] = useState<{ size: string; price: string }[]>([]);
   const [scriptSelection, setScriptSelection] = useState(false);
   const [titleSelection, setTitleSelection] = useState(false);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -106,24 +111,18 @@ const NewItemModal: React.FC<{
     []
   );
 
-  const validateDimensions = (input: string): boolean => {
-    if (!input.trim()) {
-      setDimensionsError("");
-      return true;
-    }
+  const handleAddSize = () => {
+    setSizeOptions([...sizeOptions, { size: "", price: "" }]);
+  };
 
-    const values = input.split(",").map((val) => val.trim());
-    const isValid = values.every((val) => val.length > 0);
+  const handleRemoveSize = (index: number) => {
+    setSizeOptions(sizeOptions.filter((_, i) => i !== index));
+  };
 
-    if (!isValid) {
-      setDimensionsError(
-        "Dimenzije moraju biti odvojene zarezom bez praznih vrednosti."
-      );
-      return false;
-    }
-
-    setDimensionsError("");
-    return true;
+  const handleSizeChange = (index: number, field: "size" | "price", value: string) => {
+    const updated = [...sizeOptions];
+    updated[index] = { ...updated[index], [field]: value };
+    setSizeOptions(updated);
   };
 
   useEffect(() => {
@@ -216,23 +215,33 @@ const NewItemModal: React.FC<{
       toast.error("Molimo vas izaberite kategoriju i podkategoriju.");
       return;
     }
-    if (!validateDimensions(dimensions)) {
-      toast.error("Proverite unos dimenzija.");
+    if (sizeOptions.length === 0) {
+      toast.error("Dodajte barem jednu veličinu sa cenom.");
+      return;
+    }
+    const invalid = sizeOptions.some((opt) => !opt.size.trim() || !opt.price);
+    if (invalid) {
+      toast.error("Sve veličine moraju imati naziv i cenu.");
       return;
     }
     setLoading(true);
     try {
       const imageUrls = await uploadImages();
+      const parsedSizeOptions = sizeOptions.map((opt) => ({
+        size: opt.size.trim(),
+        price: parseFloat(opt.price),
+      }));
+      const productPrice = Math.min(...parsedSizeOptions.map((o) => o.price));
       await addDoc(collection(db, "products"), {
         name,
         category,
         subcategory,
-        price: parseFloat(price),
+        price: productPrice,
         description,
         images: imageUrls,
         onDiscount: false,
         discountPrice: null,
-        dimensions,
+        sizeOptions: parsedSizeOptions,
         scriptSelection,
         titleSelection,
         dateSelection,
@@ -246,7 +255,7 @@ const NewItemModal: React.FC<{
       setName("");
       setCategory("");
       setSubcategory("");
-      setPrice("");
+      setSizeOptions([]);
       setDescription("");
       setImages([]);
       setImagePreviews([]);
@@ -392,29 +401,41 @@ const NewItemModal: React.FC<{
           />
         </div>
         <div className="new-item-input-wrapper">
-          <label>Dimenzije (opciono):</label>
-          <input
-            type="text"
-            value={dimensions}
-            onChange={(e) => {
-              setDimensions(e.target.value);
-              validateDimensions(e.target.value);
-            }}
-            placeholder="npr: 15x20 (odovjene zarezima)"
-            title="Unesite dimenzije"
-          />
-          {dimensionsError && <p style={{ color: "red" }}>{dimensionsError}</p>}
-        </div>
-        <div className="new-item-input-wrapper">
-          <label>Cena:</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-            title="Unesite cenu proizvoda"
-            placeholder="Unesite cenu"
-          />
+          <label>Veličine i cene:</label>
+          {sizeOptions.map((opt, index) => (
+            <div key={index} className="size-option-row">
+              <input
+                type="text"
+                value={opt.size}
+                onChange={(e) => handleSizeChange(index, "size", e.target.value)}
+                placeholder="Veličina (npr: 15x20)"
+                title="Unesite veličinu"
+              />
+              <input
+                type="number"
+                value={opt.price}
+                onChange={(e) => handleSizeChange(index, "price", e.target.value)}
+                placeholder="Cena"
+                title="Unesite cenu za ovu veličinu"
+                min="0"
+              />
+              <button
+                type="button"
+                className="size-remove-btn"
+                onClick={() => handleRemoveSize(index)}
+                title="Ukloni veličinu"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddSize}
+            className="add-size-btn"
+          >
+            + Dodaj veličinu
+          </button>
         </div>
         <div className="new-item-input-wrapper">
           <label>Opis:</label>

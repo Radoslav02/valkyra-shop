@@ -5,6 +5,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
+import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import TermsModal from "../Modals/TermsModal";
 
 
@@ -31,13 +32,20 @@ export default function CustomerInfo() {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<string>("");
 
   const total = location.state?.total || 0;
+  const isPickup = deliveryMethod === "pickup";
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
 
     try {
+      if (!deliveryMethod) {
+        toast.error("Molimo vas da izaberete način preuzimanja.");
+        return;
+      }
+
       if (!isTermsAccepted) {
         toast.error(
           "Morate prihvatiti uslove korišćenja pre nego što nastavite."
@@ -45,9 +53,23 @@ export default function CustomerInfo() {
         return;
       }
 
+      const customerData = isPickup
+        ? {
+            name: data.name,
+            surname: data.surname,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            place: "",
+            postalCode: "",
+            street: "",
+            number: "",
+          }
+        : data;
+
       const orderDetails = {
-        customer: data,
+        customer: customerData,
         total,
+        deliveryMethod,
       };
 
       navigate("/poručivanje", { state: orderDetails });
@@ -70,6 +92,26 @@ export default function CustomerInfo() {
           </div>
         )}
 
+        <div className="customer-info-delivery">
+          <label>Način preuzimanja:</label>
+          <RadioGroup
+            value={deliveryMethod}
+            onChange={(e) => setDeliveryMethod(e.target.value)}
+          >
+            <FormControlLabel
+              value="pickup"
+              control={<Radio />}
+              label="Lično preuzimanje"
+            />
+            <FormControlLabel
+              value="shipping"
+              control={<Radio />}
+              label="Dostava na adresu"
+            />
+          </RadioGroup>
+        </div>
+
+        {deliveryMethod && (
         <div className="customer-info-inputs">
           <div className="customer-info-row">
             <div className="customer-info-input-wrapper">
@@ -112,63 +154,6 @@ export default function CustomerInfo() {
                 <span className="error">Ovo polje je obavezno</span>
               )}
             </div>
-          </div>
-
-          <div className="customer-info-row">
-            <div className="customer-info-input-wrapper">
-              <label htmlFor="place">Mesto stanovanja</label>
-              <input
-                id="place"
-                {...register("place", { required: true })}
-                placeholder="Vaše mesto stanovanja"
-                disabled={isLoading}
-              />
-              {errors.place && (
-                <span className="error">Ovo polje je obavezno</span>
-              )}
-            </div>
-            <div className="customer-info-input-wrapper">
-              <label htmlFor="postalCode">Poštanski broj</label>
-              <input
-                id="postalCode"
-                {...register("postalCode", { required: true })}
-                placeholder="11000"
-                disabled={isLoading}
-              />
-              {errors.postalCode && (
-                <span className="error">Ovo polje je obavezno</span>
-              )}
-            </div>
-          </div>
-
-          <div className="customer-info-row">
-            <div className="customer-info-input-wrapper">
-              <label htmlFor="street">Ulica</label>
-              <input
-                id="street"
-                {...register("street", { required: true })}
-                placeholder="Ulica"
-                disabled={isLoading}
-              />
-              {errors.street && (
-                <span className="error">Ovo polje je obavezno</span>
-              )}
-            </div>
-            <div className="customer-info-input-wrapper">
-              <label htmlFor="number">Broj kuće/zgrade</label>
-              <input
-                id="number"
-                {...register("number", { required: true })}
-                placeholder="123"
-                disabled={isLoading}
-              />
-              {errors.number && (
-                <span className="error">Ovo polje je obavezno</span>
-              )}
-            </div>
-          </div>
-
-          <div className="customer-info-row">
             <div className="customer-info-input-wrapper">
               <label htmlFor="phoneNumber">Broj telefona</label>
               <input
@@ -182,8 +167,69 @@ export default function CustomerInfo() {
               )}
             </div>
           </div>
-        </div>
 
+          {!isPickup && (
+            <>
+              <div className="customer-info-row">
+                <div className="customer-info-input-wrapper">
+                  <label htmlFor="place">Mesto stanovanja</label>
+                  <input
+                    id="place"
+                    {...register("place", { required: !isPickup })}
+                    placeholder="Vaše mesto stanovanja"
+                    disabled={isLoading}
+                  />
+                  {errors.place && (
+                    <span className="error">Ovo polje je obavezno</span>
+                  )}
+                </div>
+                <div className="customer-info-input-wrapper">
+                  <label htmlFor="postalCode">Poštanski broj</label>
+                  <input
+                    id="postalCode"
+                    {...register("postalCode", { required: !isPickup })}
+                    placeholder="11000"
+                    disabled={isLoading}
+                  />
+                  {errors.postalCode && (
+                    <span className="error">Ovo polje je obavezno</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="customer-info-row">
+                <div className="customer-info-input-wrapper">
+                  <label htmlFor="street">Ulica</label>
+                  <input
+                    id="street"
+                    {...register("street", { required: !isPickup })}
+                    placeholder="Ulica"
+                    disabled={isLoading}
+                  />
+                  {errors.street && (
+                    <span className="error">Ovo polje je obavezno</span>
+                  )}
+                </div>
+                <div className="customer-info-input-wrapper">
+                  <label htmlFor="number">Broj kuće/zgrade</label>
+                  <input
+                    id="number"
+                    {...register("number", { required: !isPickup })}
+                    placeholder="123"
+                    disabled={isLoading}
+                  />
+                  {errors.number && (
+                    <span className="error">Ovo polje je obavezno</span>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+        )}
+
+        {deliveryMethod && (
+        <>
         <div className="customer-info-terms">
           <Checkbox
             id="termsCheckbox"
@@ -202,6 +248,8 @@ export default function CustomerInfo() {
         >
           {isLoading ? "Obrađujem..." : "Nastavi na poručivanje"}
         </button>
+        </>
+        )}
       </form>
 
       <TermsModal isOpen={isModalOpen} close={() => setModalOpen(false)} />

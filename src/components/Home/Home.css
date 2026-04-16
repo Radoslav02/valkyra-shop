@@ -23,15 +23,11 @@
   display: flex;
 }
 
-/* Sidebar (unified Sort & Filter) */
+/* Sidebar (Sort & Filter) */
 .sidebar {
   width: 260px;
   flex-shrink: 0;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
   margin-right: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Combined Sort & Filter container */
@@ -83,6 +79,11 @@
     width: 100%;
     max-width: 400px;
     margin: 0px 0px 25px 0px;
+    display: none;
+  }
+
+  .sidebar.sidebar-mobile-open {
+    display: block;
   }
 
   .main-content {

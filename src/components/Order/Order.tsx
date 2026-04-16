@@ -5,7 +5,7 @@ import emailjs from "@emailjs/browser";
 import { clearCart } from "../Redux/cartSlice";
 import "./Order.css";
 import type { RootState } from "../Redux/store";
-import { Button } from "@mui/material";
+import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { toast } from "react-toastify";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -26,15 +26,19 @@ const Order = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { customer, total } =
+  const { customer, total, deliveryMethod: passedDeliveryMethod } =
     (location.state as {
       customer: Customer;
       total: number;
+      deliveryMethod?: string;
     }) || {};
 
   const items = useSelector((state: RootState) => state.cart.items);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoggedIn = Boolean(user);
 
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<string>(passedDeliveryMethod || "");
 
   const sendEmail = async () => {
     if (!items || items.length === 0) {
@@ -42,9 +46,15 @@ const Order = () => {
       return;
     }
 
+    if (!deliveryMethod) {
+      toast.error("Molimo vas da izaberete način preuzimanja.");
+      return;
+    }
+
     const orderData = {
       customer,
       total,
+      deliveryMethod,
       items: items.map((item) => ({
         id: item.productId,
         name: item.name,
@@ -70,6 +80,7 @@ const Order = () => {
         customerPostalCode: customer?.postalCode,
         customerStreet: customer?.street,
         customerSurname: customer?.surname,
+        deliveryMethod: deliveryMethod === "pickup" ? "Lično preuzimanje" : "Dostava na adresu",
         total,
         items: items
           .map((item) => {
@@ -100,7 +111,7 @@ const Order = () => {
       };
 
       await emailjs.send(
-        "service_mqkqlir",
+        "service_gg68c2m",
         "template_qowqqcs",
         templateParams,
         "1tiA01x6TVNOrRdyO"
@@ -127,24 +138,113 @@ const Order = () => {
   return (
     <div className="order-container">
       <h2>Detalji porudžbine</h2>
+
+      {items && items.length > 0 && (
+        <div className="order-items-wrapper">
+          <h3>Poručeni proizvodi</h3>
+          {items.map((item) => {
+            const unitPrice =
+              item.onDiscount && item.discountPrice
+                ? item.discountPrice
+                : item.price;
+            return (
+              <div key={item.productId} className="order-item">
+                {item.image && <img src={item.image} alt={item.name} />}
+                <div className="order-item-details">
+                  <p className="order-item-name">{item.name}</p>
+                  <p className="order-item-quantity">
+                    Količina: {item.quantity}
+                  </p>
+                  <p className="order-item-price">
+                    Cena: {formatPrice(unitPrice * item.quantity)}
+                  </p>
+                  {item.selectedDimension && (
+                    <p>Dimenzija: {item.selectedDimension}</p>
+                  )}
+                  {item.selectedScript && (
+                    <p>Pismo: {item.selectedScript}</p>
+                  )}
+                  {item.customTitle && <p>Naslov: {item.customTitle}</p>}
+                  {item.selectedDate && <p>Datum: {item.selectedDate}</p>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {customer ? (
         <div className="customer-info-wrapper">
-          <h3>Podaci o klijentu:</h3>
+          <h3>Podaci o klijentu</h3>
           <div className="show-profile">
-            <p>Email: {customer.email}</p>
-            <p>Ime: {customer.name}</p>
-            <p>Broj: {customer.number}</p>
-            <p>Telefon: {customer.phoneNumber}</p>
-            <p>Mesto: {customer.place}</p>
-            <p>Poštanski broj: {customer.postalCode}</p>
-            <p>Ulica: {customer.street}</p>
-            <p>Prezime: {customer.surname}</p>
-            <h3>Ukupno za plaćanje: {formatPrice(total)}</h3>
+            <p>
+              <span>Email:</span> {customer.email}
+            </p>
+            <p>
+              <span>Ime:</span> {customer.name}
+            </p>
+            <p>
+              <span>Prezime:</span> {customer.surname}
+            </p>
+            <p>
+              <span>Telefon:</span> {customer.phoneNumber}
+            </p>
+            {isLoggedIn && (
+              <>
+                <p>
+                  <span>Mesto:</span> {customer.place}
+                </p>
+                <p>
+                  <span>Poštanski broj:</span> {customer.postalCode}
+                </p>
+                <p>
+                  <span>Ulica:</span> {customer.street}
+                </p>
+                <p>
+                  <span>Broj:</span> {customer.number}
+                </p>
+              </>
+            )}
           </div>
         </div>
       ) : (
         <p>Nema podataka o klijentu.</p>
       )}
+
+      <div className="delivery-method-wrapper">
+        <h3>Način preuzimanja</h3>
+        <RadioGroup
+          value={deliveryMethod}
+          onChange={(e) => setDeliveryMethod(e.target.value)}
+        >
+          <FormControlLabel
+            value="pickup"
+            control={<Radio />}
+            label="Lično preuzimanje"
+            disabled={!isLoggedIn}
+          />
+          <FormControlLabel
+            value="shipping"
+            control={<Radio />}
+            label="Dostava na adresu"
+            disabled={!isLoggedIn}
+          />
+        </RadioGroup>
+      </div>
+
+      <div className="order-total-wrapper">
+        <h3>Ukupno za plaćanje: {formatPrice(total)}</h3>
+        <p className="delivery-note">
+          +{" "}
+          <a
+            href="http://www.postexpress.rs/struktura/lat/cenovnik/cenovnik-unutrasnji-saobracaj.asp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Troškovi dostave
+          </a>
+        </p>
+      </div>
 
       <div className="order-button-wrapper">
         <Button
@@ -162,8 +262,6 @@ const Order = () => {
           Poruči
         </Button>
         {isEmailSent && <p>Poruka je uspešno poslata!</p>}
-
-        {/* Checkbox and label for Terms Acceptance */}
       </div>
     </div>
   );

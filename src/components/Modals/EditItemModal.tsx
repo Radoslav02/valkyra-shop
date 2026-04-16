@@ -19,6 +19,11 @@ import {
 } from "@mui/material";
 import { db, storage } from "../../firebase";
 
+interface SizeOption {
+  size: string;
+  price: number;
+}
+
 type Product = {
   productId: string;
   name: string;
@@ -31,6 +36,7 @@ type Product = {
   discountPrice?: number;
   onDiscount?: boolean;
   dimensions?: string;
+  sizeOptions?: SizeOption[];
   scriptSelection?: boolean;
   titleSelection?: boolean;
   dateSelection?: boolean;
@@ -50,6 +56,7 @@ const categoriesData = [
       "Table dobrodošlice i spisak gostiju",
       "Table za obeležavanje stolova",
       "Toperi za tortu",
+      "Magnetići za proslave",
     ],
   },
   {
@@ -93,8 +100,13 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
   const [discountPrice, setDiscountPrice] = useState(
     product.discountPrice ? String(product.discountPrice) : ""
   );
-  const [dimensions, setDimensions] = useState(product.dimensions || "");
-  const [dimensionsError, setDimensionsError] = useState("");
+  const [sizeOptions, setSizeOptions] = useState<{ size: string; price: string }[]>(
+    product.sizeOptions
+      ? product.sizeOptions.map((o) => ({ size: o.size, price: String(o.price) }))
+      : product.dimensions
+        ? product.dimensions.split(",").map((d) => ({ size: d.trim(), price: String(product.price) }))
+        : []
+  );
   const [scriptSelection, setScriptSelection] = useState(
     product.scriptSelection || false
   );
@@ -157,24 +169,18 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
     }
   }, [category, subcategory]);
 
-  const validateDimensions = (input: string): boolean => {
-    if (!input.trim()) {
-      setDimensionsError("");
-      return true;
-    }
+  const handleAddSize = () => {
+    setSizeOptions([...sizeOptions, { size: "", price: "" }]);
+  };
 
-    const values = input.split(",").map((val) => val.trim());
-    const isValid = values.every((val) => val.length > 0);
+  const handleRemoveSize = (index: number) => {
+    setSizeOptions(sizeOptions.filter((_, i) => i !== index));
+  };
 
-    if (!isValid) {
-      setDimensionsError(
-        "Dimenzije moraju biti odvojene zarezima bez praznih vrednosti."
-      );
-      return false;
-    }
-
-    setDimensionsError("");
-    return true;
+  const handleSizeChange = (index: number, field: "size" | "price", value: string) => {
+    const updated = [...sizeOptions];
+    updated[index] = { ...updated[index], [field]: value };
+    setSizeOptions(updated);
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,8 +269,14 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
       toast.error("Molimo vas izaberite kategoriju i podkategoriju.");
       return;
     }
-    if (!validateDimensions(dimensions)) {
-      toast.error("Proverite unos dimenzija.");
+    if (sizeOptions.length > 0) {
+      const invalid = sizeOptions.some((opt) => !opt.size.trim() || !opt.price);
+      if (invalid) {
+        toast.error("Sve veličine moraju imati naziv i cenu.");
+        return;
+      }
+    } else if (!price) {
+      toast.error("Unesite cenu proizvoda.");
       return;
     }
     setLoading(true);
@@ -288,16 +300,24 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
         imageUrls = imageUrls.filter((url) => !removedImages.includes(url));
       }
       // Update product in Firestore
+      const parsedSizeOptions = sizeOptions.map((opt) => ({
+        size: opt.size.trim(),
+        price: parseFloat(opt.price),
+      }));
+      const productPrice = parsedSizeOptions.length > 0
+        ? Math.min(...parsedSizeOptions.map((o) => o.price))
+        : parseFloat(price);
       await updateDoc(doc(db, "products", product.productId), {
         name,
         category,
         subcategory,
-        price: parseFloat(price),
+        price: productPrice,
         description,
         images: imageUrls,
         onDiscount,
         discountPrice: onDiscount ? parseFloat(discountPrice) : null,
-        dimensions,
+        sizeOptions: parsedSizeOptions.length > 0 ? parsedSizeOptions : null,
+        dimensions: null,
         scriptSelection,
         titleSelection,
         dateSelection,
@@ -413,33 +433,54 @@ const EditItemModal: React.FC<{ product: Product; onClose: () => void }> = ({
         )}
 
         <div className="edit-form-group">
-          <label htmlFor="dimensions">Dimenzije (opciono):</label>
-          <input
-            id="dimensions"
-            type="text"
-            value={dimensions}
-            onChange={(e) => {
-              setDimensions(e.target.value);
-              validateDimensions(e.target.value);
-            }}
-            placeholder="npr: 10, širina, 15x20"
-          />
-          {dimensionsError && (
-            <p style={{ color: "red", marginTop: "4px" }}>{dimensionsError}</p>
-          )}
+          <label>Veličine i cene:</label>
+          {sizeOptions.map((opt, index) => (
+            <div key={index} className="size-option-row">
+              <input
+                type="text"
+                value={opt.size}
+                onChange={(e) => handleSizeChange(index, "size", e.target.value)}
+                placeholder="Veličina (npr: 15x20)"
+              />
+              <input
+                type="number"
+                value={opt.price}
+                onChange={(e) => handleSizeChange(index, "price", e.target.value)}
+                placeholder="Cena"
+                min="0"
+              />
+              <button
+                type="button"
+                className="size-remove-btn"
+                onClick={() => handleRemoveSize(index)}
+                title="Ukloni veličinu"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddSize}
+            className="add-size-btn"
+          >
+            + Dodaj veličinu
+          </button>
         </div>
 
-        <div className="edit-form-group">
-          <label htmlFor="price">Cena:</label>
-          <input
-            id="price"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-            min="0"
-          />
-        </div>
+        {sizeOptions.length === 0 && (
+          <div className="edit-form-group">
+            <label htmlFor="price">Cena:</label>
+            <input
+              id="price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+              min="0"
+            />
+          </div>
+        )}
 
         <div className="edit-item-input-wrapper">
           <FormControlLabel

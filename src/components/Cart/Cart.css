@@ -114,6 +114,22 @@
     font-weight: 700;
 }
 
+.delivery-note {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.delivery-note a {
+    color: #c09463;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.delivery-note a:hover {
+    color: #a07040;
+}
+
 /* Buttons container */
 .cart-button-wrapper {
     display: flex;

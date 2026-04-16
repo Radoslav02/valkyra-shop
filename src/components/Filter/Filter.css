@@ -1,13 +1,18 @@
 .filter-container {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Header always visible; click to toggle the drawer */
+.filter-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
 .filter-header {
   display: flex;
   align-items: center;
@@ -17,20 +22,17 @@
   margin-bottom: 8px;
 }
 
-/* Options displayed in a column */
 .filter-options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
-/* Adjust the filter options for each checkbox */
 .MuiFormControlLabel-root {
   margin-left: 0;
 }
 
-/* Responsive adjustments: on small screens, adjust width */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .filter-header {
     font-size: 14px;
     display: flex;

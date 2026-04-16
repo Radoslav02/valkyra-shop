@@ -21,8 +21,6 @@ export default function Cart() {
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const deliveryCost = 620.0;
-  const finalTotal = totalPrice + deliveryCost;
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("sr-RS", {
@@ -45,14 +43,14 @@ export default function Cart() {
           street: user.street || "",
           surname: user.surname || "",
         },
-        total: finalTotal,
+        total: totalPrice,
       };
 
       navigate("/poručivanje", { state: orderDetails });
     } else {
       // korisnik nije ulogovan → vodi na formu
       const orderDetails = {
-        total: finalTotal,
+        total: totalPrice,
       };
 
       navigate("/podaci", { state: orderDetails });
@@ -114,9 +112,10 @@ export default function Cart() {
             </div>
           ))}
           <div className="total-price-container">
-            <h4>Ukupna cena: {formatPrice(totalPrice)}</h4>
-            <h4>Troškovi dostave: {formatPrice(deliveryCost)}</h4>
-            <h3>Ukupno za plaćanje: {formatPrice(finalTotal)}</h3>
+            <h4>Cena artikala: {formatPrice(totalPrice)}</h4>
+            <p className="delivery-note">
+              + <a href="http://www.postexpress.rs/struktura/lat/cenovnik/cenovnik-unutrasnji-saobracaj.asp" target="_blank" rel="noopener noreferrer">Troškovi dostave</a>
+            </p>
           </div>
           <div className="cart-button-wrapper">
             <Button

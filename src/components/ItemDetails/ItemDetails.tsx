@@ -13,6 +13,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import type { Dayjs } from "dayjs";
 
+interface SizeOption {
+  size: string;
+  price: number;
+}
+
 type Product = {
   productId: string;
   name: string;
@@ -25,6 +30,7 @@ type Product = {
   discountPrice?: number;
   onDiscount?: boolean;
   dimensions?: string;
+  sizeOptions?: SizeOption[];
   scriptSelection?: boolean;
   titleSelection?: boolean;
   dateSelection?: boolean;
@@ -71,6 +77,7 @@ export default function ItemDetails() {
             onDiscount: data.onDiscount || false,
             discountPrice: data.discountPrice || null,
             dimensions: data.dimensions || "",
+            sizeOptions: data.sizeOptions || null,
             scriptSelection: data.scriptSelection || false,
             titleSelection: data.titleSelection || false,
             relatedProducts: data.relatedProducts || [],
@@ -103,25 +110,38 @@ export default function ItemDetails() {
     setQuantity(val > 0 ? val : 1);
   };
 
+  const hasSizes = product?.sizeOptions && product.sizeOptions.length > 0;
+  const hasOldDimensions = !hasSizes && !!product?.dimensions;
+
+  const getActivePrice = (): number => {
+    if (!product) return 0;
+    if (hasSizes && selectedDimension) {
+      const found = product.sizeOptions!.find((o) => o.size === selectedDimension);
+      if (found) return found.price;
+    }
+    return product.price;
+  };
+
+  const activePrice = getActivePrice();
+
   const handleAddToCart = () => {
     if (!product) return;
 
-    if (product.dimensions && !selectedDimension) {
+    if ((hasSizes || hasOldDimensions) && !selectedDimension) {
       toast.error("Molimo vas da odaberete dimenziju.");
       return;
     }
-    if (!product) return;
+    const cartPrice = product.onDiscount && product.discountPrice
+      ? product.discountPrice
+      : activePrice;
     dispatch(
       addToCart({
         productId: product.productId,
         name: product.name,
-        price:
-          product.onDiscount && product.discountPrice
-            ? product.discountPrice
-            : product.price,
+        price: cartPrice,
         image: selectedImage || "",
         quantity,
-        selectedDimension: product.dimensions ? selectedDimension : undefined,
+        selectedDimension: (hasSizes || hasOldDimensions) ? selectedDimension : undefined,
         selectedScript: product.scriptSelection ? selectedScript : undefined,
         customTitle: product.titleSelection ? customTitle : undefined,
         selectedDate: product.dateSelection ? selectedDate?.format("DD/MM/YYYY") : undefined,
@@ -170,13 +190,17 @@ export default function ItemDetails() {
                 <p className="product-price">
                   {formatPrice(product.discountPrice)}
                 </p>
-                <p className="old-price">{formatPrice(product.price)}</p>
+                <p className="old-price">{formatPrice(activePrice)}</p>
                 <p className="discount-text">
-                  Ušteda: {formatPrice(product.price - product.discountPrice)}
+                  Ušteda: {formatPrice(activePrice - product.discountPrice)}
                 </p>
               </>
             ) : (
-              <p className="product-price">{formatPrice(product.price)}</p>
+              <p className="product-price">
+                {hasSizes && !selectedDimension
+                  ? `od ${formatPrice(product.price)}`
+                  : formatPrice(activePrice)}
+              </p>
             )}
             {product.description && (
               <p className="product-desc">{product.description}</p>
@@ -206,8 +230,26 @@ export default function ItemDetails() {
                 </button>
               </div>
             </div>
-            {/* DIMENZIJE DROPDOWN */}
-            {product.dimensions && (
+            {/* SIZE OPTIONS DROPDOWN */}
+            {hasSizes && (
+              <div className="details-option-group">
+                <label>Odaberite veličinu:</label>
+                <select
+                  value={selectedDimension}
+                  onChange={(e) => setSelectedDimension(e.target.value)}
+                  required
+                >
+                  <option value="">-- Odaberite --</option>
+                  {product.sizeOptions!.map((opt, i) => (
+                    <option key={i} value={opt.size}>
+                      {opt.size} — {formatPrice(opt.price)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {/* OLD DIMENSIONS DROPDOWN (backward compat) */}
+            {hasOldDimensions && (
               <div className="details-option-group">
                 <label>Odaberite dimenziju:</label>
                 <select
@@ -216,7 +258,7 @@ export default function ItemDetails() {
                   required
                 >
                   <option value="">-- Odaberite --</option>
-                  {product.dimensions.split(",").map((dim, i) => (
+                  {product.dimensions!.split(",").map((dim, i) => (
                     <option key={i} value={dim.trim()}>
                       {dim.trim()}
                     </option>

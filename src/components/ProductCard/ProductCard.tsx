@@ -12,6 +12,7 @@ type Product = {
   images: string[];
   onDiscount?: boolean;
   discountPrice?: number;
+  sizeOptions?: { size: string; price: number }[];
 };
 
 interface ProductCardProps {
@@ -102,7 +103,16 @@ export default function ProductCard({
             </Box>
           ) : (
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              {formatPrice(product.price)} RSD
+              {product.sizeOptions && product.sizeOptions.length > 0
+                ? (() => {
+                    const prices = product.sizeOptions!.map((o) => o.price);
+                    const min = Math.min(...prices);
+                    const max = Math.max(...prices);
+                    return min === max
+                      ? `${formatPrice(min)} RSD`
+                      : `${formatPrice(min)} - ${formatPrice(max)} RSD`;
+                  })()
+                : `${formatPrice(product.price)} RSD`}
             </Typography>
           )}
         </Box>
